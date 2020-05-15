@@ -1,0 +1,13 @@
+version: "3"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: "docker/app/Dockerfile"
+    command: ruby main.rb
+    volumes:
+      - ./:/app/
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
