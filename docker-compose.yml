@@ -3,11 +3,23 @@ services:
   app:
     build:
       context: .
-      dockerfile: "docker/app/Dockerfile"
-    command: ruby main.rb
+      dockerfile: ./docker/app/Dockerfile
+    command: bash -c "ruby main.rb -o 0.0.0.0"
+    ports:
+      - "4567:4567"
     volumes:
-      - ./:/app/
+      - ./:/app
+    depends_on:
+      - db
+    environment:
+      - ENV=development
   db:
     image: mariadb:latest
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./init_db/:/docker-entrypoint-initdb.d/"
+      - "./docker/data/:/var/lib/mysql/"
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app
