@@ -10,7 +10,7 @@ Bundler.require
 require 'sinatra'
 require 'mysql2'
 
-Dir.open('./models/').each do |file_name|
+Dir.children('./models/').each do |file_name|
   require_relative "./models/#{file_name}"
 end
 
