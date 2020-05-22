@@ -1,4 +1,8 @@
 todos index
-<% @todos.each |todo| %>
-  <%= todo. %>
+<% @todos.each do |todo| %>
+  <div>
+    <%= todo.id %>
+    <%= todo.title %>
+    <%= todo.body %>
+  </div>
 <% end %>
