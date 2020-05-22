@@ -32,7 +32,11 @@ class ActiveRecordLike
     def insert
     end
 
-    def find_by
+    def find_by(id)
+      statement = DB.prepare("select * from #{to_table_name};")
+      statement.execute.map do |record|
+        new(record)
+      end[0]
     end
 
     private

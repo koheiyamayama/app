@@ -29,6 +29,7 @@ get '/todos' do
 end
 
 get '/todos/:id' do
+  @todo = Todo.find_by(params['id'])
   erb :'todos/show'
 end
 
