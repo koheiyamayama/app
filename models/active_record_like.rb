@@ -29,14 +29,23 @@ class ActiveRecordLike
       end
     end
 
-    def insert
+    def insert(collection)
+      raise ArgumentError, 'Hashを渡してください' unless collection.instance_of?(Hash)
+      columns = collection.keys.join(',')
+      values = collection.values.map { |value| "'#{value}'"}.join(',')
+      statement = DB.prepare("insert into #{to_table_name} (#{columns}) values (#{values});")
+      unless statement.execute
+        new(collection)
+      end
     end
 
-    def find_by(id)
-      statement = DB.prepare("select * from #{to_table_name};")
-      statement.execute.map do |record|
+    def find(id)
+      statement = DB.prepare("select * from #{to_table_name} where id = ?;")
+      result = statement.execute(id).map do |record|
         new(record)
       end[0]
+      raise StandardError, 'NotFound' unless result
+      result
     end
 
     private
