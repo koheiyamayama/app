@@ -76,6 +76,12 @@ class ActiveRecordLike
   end
 
   def destroy
+    statement = DB.prepare("delete from #{self.class.to_table_name} where id = ?;")
+    if statement.execute(id)
+      false
+    else
+      true
+    end
   end
 
   def save

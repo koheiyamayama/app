@@ -53,7 +53,11 @@ patch '/todos/:id' do
   todo = Todo.find(params['id'])
   todo.assign({id: todo.id, title: params['title'], body: params['body']})
   todo.save
+  redirect '/todos'
 end
 
 delete '/todos/:id' do
+  todo = Todo.find(params['id'])
+  todo.destroy
+  redirect '/todos'
 end
