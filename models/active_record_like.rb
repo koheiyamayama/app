@@ -7,7 +7,7 @@ class ActiveRecordLike
   DB = if ENV['ENV'] === 'development'
     Mysql2::Client.new(host: 'db', username: 'root', password: 'root', database: 'app', reconnect: true)
   else
-    Mysql2::Client.new(host: '192.168.11.4', username: 'kohei', password: 'h19970203', database: 'app')
+    Mysql2::Client.new(host: '192.168.11.2', username: 'root', password: 'root', database: 'app')
   end
 
   def initialize(record: {})
