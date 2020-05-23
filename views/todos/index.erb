@@ -1,8 +1,10 @@
 todos index
 <% @todos.each do |todo| %>
-  <div>
-    <%= todo.id %>
-    <%= todo.title %>
-    <%= todo.body %>
-  </div>
+  <a href="/todos/<%= todo.id %>">
+    <div>
+      <%= todo.id %>
+      <%= todo.title %>
+      <%= todo.body %>
+    </div>
+  </a>
 <% end %>
