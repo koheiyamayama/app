@@ -19,6 +19,8 @@ DB = if ENV['ENV'] === 'development'
        Mysql2::Client.new(host: '192.168.11.4', username: 'kohei', password: 'h19970203', database: 'app')
      end
 
+enable :method_override
+
 get '/' do
   erb :index
 end
@@ -37,12 +39,20 @@ get '/todos/new' do
   erb :'todos/new'
 end
 
+get '/todos/:id/edit' do
+  @todo = Todo.find(params['id'])
+  erb :'todos/edit'
+end
+
 post '/todos' do
   Todo.insert(params.to_h)
   redirect '/todos'
 end
 
 patch '/todos/:id' do
+  todo = Todo.find(params['id'])
+  todo.assign({id: todo.id, title: params['title'], body: params['body']})
+  todo.save
 end
 
 delete '/todos/:id' do

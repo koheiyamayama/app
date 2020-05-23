@@ -5,7 +5,7 @@ Bundler.require
 
 class ActiveRecordLike
   DB = if ENV['ENV'] === 'development'
-    Mysql2::Client.new(host: 'db', username: 'root', password: 'root', database: 'app')
+    Mysql2::Client.new(host: 'db', username: 'root', password: 'root', database: 'app', reconnect: true)
   else
     Mysql2::Client.new(host: '192.168.11.4', username: 'kohei', password: 'h19970203', database: 'app')
   end
@@ -20,15 +20,14 @@ class ActiveRecordLike
     end
 
     record.each do |key, value|
-      # この辺無駄にイテレートしている気がするので、リファクタする
       instance_variable_set("@#{key}", value)
-      instance_variables.each do |instance_variable|
-        define_singleton_method(instance_variable.to_s.gsub('@', '')) do
-          instance_variable_get(instance_variable)
-        end
-        define_singleton_method(instance_variable.to_s.gsub('@', '') + '=') do |arg|
-          instance_variable_set("@#{key}", arg)
-        end
+    end
+
+    instance_variables.each do |instance_variable|
+      define_singleton_method(instance_variable.to_s.gsub('@', '')) { instance_variable_get(instance_variable) }
+      define_singleton_method(instance_variable.to_s.gsub('@', '') + '=') do |value| 
+        instance_variable_set(instance_variable, value) 
+        send(instance_variable.to_s.gsub('@', ''))
       end
     end
   end
@@ -49,6 +48,8 @@ class ActiveRecordLike
       unless statement.execute
         new(record: hash)
       end
+    rescue StandardError
+      nil
     end
 
     def find(id)
@@ -58,6 +59,8 @@ class ActiveRecordLike
       end[0]
       raise StandardError, 'NotFound' unless result
       result
+    rescue StandardError
+      nil
     end
 
     def to_table_name
@@ -75,9 +78,30 @@ class ActiveRecordLike
   def destroy
   end
 
-  def update(id)
+  def save
+    if self.class.find(id)
+      attributes = instance_variables.map do |instance_variable|
+        "#{instance_variable.to_s.gsub('@', '')} = '#{send(instance_variable.to_s.gsub('@', ''))}'"
+        end.join(", ")
+      statement = DB.prepare("update #{self.class.to_table_name} set #{attributes} where id = ?;")
+      if statement.execute(id)
+        false
+      else
+        true
+      end
+    else
+      hash = Hash.new
+      instance_variables.each do |instance_variable|
+        hash[instance_variable.to_s.gsub('@', '')] = send(instance_variable.to_s.gsub('@', ''))
+      end
+      self.class.insert(hash)
+    end
   end
 
   def assign(hash)
+    hash.each do |key, value|
+      send("#{key}=", value)
+    end
+    self
   end
 end
