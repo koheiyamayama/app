@@ -30,7 +30,7 @@ get '/todos' do
   erb :'todos/index'
 end
 
-get '/todos/\d+' do
+get %r{/todos/(\d+)} do
   @todo = Todo.find(params['captures'].first)
   erb :'todos/show'
 end

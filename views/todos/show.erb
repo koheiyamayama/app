@@ -2,3 +2,7 @@ todos show
 <p><%= @todo.id %></p>
 <p><%= @todo.title %></p>
 <p><%= @todo.body %></p>
+<form method="post" action="/todos/<%= @todo.id %>">
+  <input type="hidden" value="_delete" name="method">
+  <input type="submit" value="削除する">
+</form>
