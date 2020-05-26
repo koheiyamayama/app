@@ -16,7 +16,7 @@ require 'sinatra/reloader' if ENV['ENV'] === 'development'
 DB = if ENV['ENV'] === 'development'
        Mysql2::Client.new(host: 'db', username: 'root', password: 'root', database: 'app', charset: 'utf8mb4', encoding: 'utf8mb4', collation: 'utf8mb4_general_ci', reconnect: true)
      else
-       Mysql2::Client.new(host: '192.168.11.2', username: 'root', password: 'root', database: 'app')
+       Mysql2::Client.new(host: '10.0.2.4', username: 'root', password: 'root', database: 'app')
      end
 
 enable :method_override
